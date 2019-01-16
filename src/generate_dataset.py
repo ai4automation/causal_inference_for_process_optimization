@@ -83,7 +83,7 @@ if __name__ == '__main__':
     TOTAL_SAMPLES = 10000
     SAMPLES_PER_BAG = 1000
 
-    SAVE_PATH = '/Users/tanmayee/Documents/dev/causal-signals/data'
+    SAVE_PATH = '/Users/tanmayee/Documents/dev/bpm-causal/data'
 
     data_generator = GenerateData({'n': TOTAL_SAMPLES, 'm': SAMPLES_PER_BAG})
     data_generator.generate_and_save(SAVE_PATH)
