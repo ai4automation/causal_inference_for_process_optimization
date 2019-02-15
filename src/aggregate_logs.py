@@ -3,24 +3,17 @@ from tqdm import tqdm
 import pandas as pd
 import argparse
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Aggregate MXML logs')
-    parser.add_argument('mxml_filename')
-    parser.add_argument('save_filename')
-    args = parser.parse_args()
 
-    groupby_time_frequency = 'H'
-
-    print('Converting MXML to CSV',)
+def get_aggregate_df(mxml_filename, groupby_time_frequency):
+    print('Converting MXML to CSV', )
     df = pd.DataFrame(columns=['case_id', 'activity', 'resource', 'complete_timestamp'])
 
-    with open(args.mxml_filename) as f:
+    with open(mxml_filename) as f:
         doc = xmltodict.parse(f.read())
 
     for instance in tqdm(doc['WorkflowLog']['Process']['ProcessInstance']):
         case_id = instance['@id']
         resource = None
-        all_complete_timestamps = {}
         iterator = instance['AuditTrailEntry']
         iterator.sort(key=lambda x: x['Timestamp'])
         for entry in iterator:
@@ -53,6 +46,16 @@ if __name__ == '__main__':
                 'resource': name2[1],
                 'count': len(group2['case_id'].unique())
             }, ignore_index=True)
+    return aggregate_df
 
-    aggregate_df.to_csv(args.save_filename, index=False)
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Aggregate MXML logs')
+    parser.add_argument('mxml_filename')
+    parser.add_argument('save_filename')
+    args = parser.parse_args()
+
+    groupby_frequency = 'H'
+
+    aggregate_data = get_aggregate_df(args.mxml_filename, groupby_frequency)
+    aggregate_data.to_csv(args.save_filename, index=False)
     print('Written file to', args.save_filename)
